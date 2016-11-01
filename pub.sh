@@ -51,7 +51,14 @@ RANGE=60
 number=$RANDOM
 let "number %= $RANGE"
 if [ $number -eq 30 ]; then
-	curl -s --data-binary '{"id":"1","method":"publish_feed","params":["'"$NICKNAME"'",{"base":"0.100 GBG", "quote":"1.000 GOLOS"}, true],"jsonrpc":"2.0"}' "$WALLET" > /dev/null
+	BASE="1.000"
+	QUOTE=`curl -s "http://www.steeme.ru/gf.html?mode=feed"`
+	PUB=`curl -s --data-binary '{"id":"2","method":"publish_feed","params":["'"$NICKNAME"'",{"base":"'"$BASE GBG"'", "quote":"'"$QUOTE GOLOS"'"}, true],"jsonrpc":"2.0"}' "$WALLET" | jq -r '.id'`
+	if [ $PUB -eq 2 ]; then
+		echo "Feed was updated successfully. 'base'=${BASE} 'quote'=${QUOTE}"		
+	else
+		echo "Some error. Feed wasn't updated."		
+	fi
 fi
 
 checkLockAndExit
